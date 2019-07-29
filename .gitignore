@@ -1,0 +1,5 @@
+.stack-work/
+pieces-for-mono-synth.cabal
+*.mid
+*~
+dist-newstyle/

@@ -1,0 +1,51 @@
+name:                pieces-for-mono-synth
+version:             0.1.0.0
+github:              "githubuser/pieces-for-mono-synth"
+license:             BSD3
+author:              "Erich Grunewald"
+maintainer:          "erichgrunewald@gmail.com"
+copyright:           "2019 Erich Grunewald"
+
+extra-source-files:
+- README.md
+- ChangeLog.md
+
+# Metadata used when publishing your package
+# synopsis:            Short description of your package
+# category:            Web
+
+# To avoid duplicated efforts in documentation and dealing with the
+# complications of embedding Haddock markup inside cabal files, it is
+# common to point users to the README.md file.
+description:         Please see the README on GitHub at <https://github.com/githubuser/pieces-for-mono-synth#readme>
+
+dependencies:
+- base >= 4.7 && < 5
+- Euterpea >= 2.0 && < 2.1
+- containers >=0.6 && <1.0
+- random >=1.0 && <2.0
+
+library:
+  source-dirs: src
+
+executables:
+  pieces-for-mono-synth-exe:
+    main:                Main.hs
+    source-dirs:         app
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - pieces-for-mono-synth
+
+tests:
+  pieces-for-mono-synth-test:
+    main:                Spec.hs
+    source-dirs:         test
+    ghc-options:
+    - -threaded
+    - -rtsopts
+    - -with-rtsopts=-N
+    dependencies:
+    - pieces-for-mono-synth
