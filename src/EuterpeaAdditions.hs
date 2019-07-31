@@ -1,8 +1,10 @@
 module EuterpeaAdditions
-    (transInScale,
-    appoggiatura,
-    mordent,
-    phaseIt) where
+    ( transInScale
+    , appoggiatura
+    , mordent
+    , phaseIt
+    )
+where
 
 import Euterpea
 import Utility
@@ -15,23 +17,19 @@ import Data.List (findIndex)
 -}
 transInScale :: PitchClass -> [Int] -> Int -> Pitch -> Pitch
 transInScale pc mode i = f
-    where
-        buildOctave oct = map (\n -> n + oct * 12) mode
-        notesInScale = map (+ (pcToInt pc)) $ concatMap buildOctave [0..8]
-        fAbs p = findIndex (>= p) notesInScale >>= \idx -> nth (idx + i) notesInScale
-        f p = fromMaybe p $ fmap pitch $ fAbs $ absPitch p
+  where
+    buildOctave oct = map (\n -> n + oct * 12) mode
+    notesInScale = map (+ (pcToInt pc)) $ concatMap buildOctave [0 .. 8]
+    fAbs p = findIndex (>= p) notesInScale >>= \idx -> nth (idx + i) notesInScale
+    f p = fromMaybe p $ fmap pitch $ fAbs $ absPitch p
 
 appoggiatura :: Int -> Rational -> Music Pitch -> Music Pitch
-appoggiatura n r (Prim (Note d p)) =
-    note (r * d) (trans n p) :+: note ((1 - r) * d) p
-appoggiatura _ _ _ =
-    error "appoggiatura: can only add an appoggiatura to a note"
+appoggiatura n r (Prim (Note d p)) = note (r * d) (trans n p) :+: note ((1 - r) * d) p
+appoggiatura _ _ _                 = error "appoggiatura: can only add an appoggiatura to a note"
 
 mordent :: Int -> Dur -> Music Pitch -> Music Pitch
-mordent i mDur (Prim (Note d p)) =
-    note mDur p :+: note mDur (trans i p) :+: note (d - 2 * mDur) p
-mordent _ _ _ =
-    error "mordent: can only add a mordent to a note"
+mordent i mDur (Prim (Note d p)) = note mDur p :+: note mDur (trans i p) :+: note (d - 2 * mDur) p
+mordent _ _    _                 = error "mordent: can only add a mordent to a note"
 
 phaseIt :: Rational -> Music a -> Music a
 phaseIt factor m = m :=: tempo factor m
