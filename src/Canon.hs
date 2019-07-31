@@ -28,8 +28,8 @@ canonOnsetDistances :: [Rational]
 canonOnsetDistances = [(1/2), (1/4), (3/4), (1/8), (3/8), (5/8), (7/8)]
 
 getDurAndAbsPitch :: Music Pitch -> (Dur, Maybe AbsPitch)
-getDurAndAbsPitch (Prim (Note d p)) = (d, Just (absPitch p)) 
-getDurAndAbsPitch (Prim (Rest d)) = (d, Nothing) 
+getDurAndAbsPitch (Prim (Note d p)) = (d, Just (absPitch p))
+getDurAndAbsPitch (Prim (Rest d)) = (d, Nothing)
 getDurAndAbsPitch _ =
     error "getDurAndAbsPitch: can only get duration and pitch from a primitive"
 
@@ -42,7 +42,7 @@ findCanons :: Int -> Music Pitch -> [(AbsPitch, Dur)]
 findCanons numVoices m = filter (uncurry (check m)) combinations
     where
         combinations = [ (i, d) | i <- canonIntervals, d <- canonOnsetDistances ]
-        check m i d = (== 0) . length $ findIllegalNotes $ canonize numVoices 1 i d m   
+        check m i d = (== 0) . length $ findIllegalNotes $ canonize numVoices 1 i d m
 
 findCanonErrors :: Int -> Music Pitch -> [(AbsPitch, Dur, ((Int, Pitch), (Int, Pitch)))]
 findCanonErrors numVoices m = catMaybes $ map (uncurry (findErrors m)) combinations

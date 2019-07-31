@@ -18,13 +18,13 @@ type EuclideanRhythm = (Int, EuclideanNecklace) -- offset and distances
 
 {-| @distribEvenly'@ takes a list of lists of something (the accumulator) and a
     list of something (the remainder) and returns the accumulator with the
-    remainder evenly distributed within it. For example, calling 
+    remainder evenly distributed within it. For example, calling
     `distribEvenly' [[2],[2],[2]] [1,1]` returns `[2,1,2,1,2]`.
 -}
 distribEvenly' :: [[a]] -> [a] -> [a]
 -- If the remainder is empty, concatenate and return the accumulator.
 distribEvenly' acc [] = concat acc
--- If the remainder has only one element, tack it onto the end of the 
+-- If the remainder has only one element, tack it onto the end of the
 -- concatenated accumulator and return the result.
 distribEvenly' acc (rem:[]) = concat acc ++ [rem]
 distribEvenly' acc rem =
@@ -43,27 +43,27 @@ distribEvenly' acc rem =
         -- If there's more than 1 element left of the old remainder, we'll keep
         -- going with that one, distributing it's values in the accumulator.
         then distribEvenly' newAcc remnantOfOldRem
-        -- If not, we'll do the same thing recursively at a higher level. In 
+        -- If not, we'll do the same thing recursively at a higher level. In
         -- other words, if there are any odd subdivisions, we need to distribute
         -- those evenly, too.
         else concat $ distribEvenly' (map pure newAcc) newRem ++ [remnantOfOldRem]
 
-{-| @distribEvenly@ takes a list of ordered numbers (of two different values 
-    only) and returns them evenly distributed over the indices. For instance, 
+{-| @distribEvenly@ takes a list of ordered numbers (of two different values
+    only) and returns them evenly distributed over the indices. For instance,
     `[2,2,2,1,1]` or `[1,1,2,2,2]` returns `[2,1,2,1,2]`.
 -}
 distribEvenly :: (Num a, Ord a) => [a] -> [a]
-distribEvenly xs = 
+distribEvenly xs =
     let
         maxVal = foldl max 0 xs -- maximum value from the list
 
-        -- Split the list into two, one containing all the higher values 
+        -- Split the list into two, one containing all the higher values
         -- (`initAcc`) and one containing the lower values (`remainder`).
         (remainder, initAcc) = span (< maxVal) $ sort xs
     in
         -- Now we nest each of the high values into its own list. We then call
         -- `distribEvenly'`, which will intersperse the lower numbers in these
-        -- lists. For the example above, we would call it with 
+        -- lists. For the example above, we would call it with
         -- `[[2],[2],[2]]` and `[1,1]`.
         distribEvenly' (map pure initAcc) remainder
 
@@ -76,13 +76,13 @@ euclid k n =
         quot = n `div` k
         rem = n `mod` k
 
-        -- We want k pulses, hence we will have k distances. The distances, if 
+        -- We want k pulses, hence we will have k distances. The distances, if
         -- they are to be as evenly distributed as possible, need to be at least
         -- as high as the quotient. E.g. for E(3,8) we get 222 here.
         base = replicate k quot
 
         -- We want n points, so the total sum of all distances should be n.
-        -- Hence we need `n - sum base` additional distance units. We'll 
+        -- Hence we need `n - sum base` additional distance units. We'll
         -- distribute these evenly over the first `n - sum base` pulses.
         -- Continuing the example, `8 - (2 + 2 + 2) = 2`, giving us 332. These
         -- are the final distances that we want to return, only now they are not
@@ -91,8 +91,8 @@ euclid k n =
     in
         distribEvenly distances
 
-{-| @superEuclid@ takes a list of numbers of pulses `ks` and number of points 
-    `n` and returns a composite Euclidean rhythm represented as a list of `k` 
+{-| @superEuclid@ takes a list of numbers of pulses `ks` and number of points
+    `n` and returns a composite Euclidean rhythm represented as a list of `k`
     distances.
 -}
 superEuclid :: [Int] -> Int -> EuclideanNecklace
@@ -118,14 +118,14 @@ shiftR = shift (+)
 shiftL :: EuclidModifier
 shiftL = shift (-)
 
-{-| @monoizeDistancesL@ takes a list of Euclidean rhythms and makes it so that 
+{-| @monoizeDistancesL@ takes a list of Euclidean rhythms and makes it so that
     only one of them contains a pulse at any one time (with priority given to
     the fist rhythm of the list.)
 -}
 monoizeDistancesL :: [EuclideanRhythm] -> [EuclideanRhythm]
 monoizeDistancesL = reverse . monoizeDistancesR . reverse
 
-{-| @monoizeDistancesR@ takes a list of Euclidean rhythms and makes it so that 
+{-| @monoizeDistancesR@ takes a list of Euclidean rhythms and makes it so that
     only one of them contains a pulse at any one time (with priority given to
     the last rhythm of the list.)
 -}

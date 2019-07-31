@@ -63,7 +63,7 @@ strToMusic p d m@(root, is) r@(o,ds) (s:ss) =
                 let (hd, tl) = spanLong ']' ss
                 in strToMusic p d m r hd :+: strToMusic p d m r tl
             ']' -> strToMusic p d m r ss
-            '{' -> 
+            '{' ->
                 let
                     (hd, tl) = spanLong '}' ss
                     (newRoot, _) = pitch $ ((pcToInt root) `mod` 12) + 7

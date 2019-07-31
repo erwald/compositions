@@ -9,7 +9,7 @@ import Utility
 import Data.Maybe (fromMaybe)
 import Data.List (findIndex)
 
-{-| @transInScale@ takes a scale (pitch class and list of intervals), an 
+{-| @transInScale@ takes a scale (pitch class and list of intervals), an
     interval and a pitch, and returns the pitch moved by the interval within the
     given scale.
 -}
@@ -36,7 +36,7 @@ mordent _ _ _ =
 phaseIt :: Rational -> Music a -> Music a
 phaseIt factor m = m :=: tempo factor m
 
-{-| @rep@ takes two Music-modifying functions and a number and repeatedly 
+{-| @rep@ takes two Music-modifying functions and a number and repeatedly
     applies the functions to the music in a very confusing manner ... Perhaps it
     can be useful.
 -}
