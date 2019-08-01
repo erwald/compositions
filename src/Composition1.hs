@@ -52,7 +52,7 @@ strToMusic p d m@(root, is) r@(o,ds) (s:ss) =
                     , strToMusic p d m (newRhythm 1) ss
                     ]
             '3' -> makeChord (c [0,2,4] 2) :+: strToMusic p d m (newRhythm 2) ss
-            '4' -> makeChord (c [0,2,5] 2) :+: strToMusic p d m (newRhythm 2) ss
+            '4' -> makeChord (c [-2,0,3] 2) :+: strToMusic p d m (newRhythm 2) ss
             '+' ->
                 let newP = transInScale root mode 1 p
                 in strToMusic newP d m r ss
