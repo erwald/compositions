@@ -49,3 +49,5 @@ tests:
     - -with-rtsopts=-N
     dependencies:
     - pieces-for-mono-synth
+    - hspec
+    - QuickCheck
