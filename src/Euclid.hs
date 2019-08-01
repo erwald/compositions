@@ -69,7 +69,8 @@ distribEvenly xs =
        distribEvenly' (map pure initAcc) remainder
 
 {-| @euclid@ takes a number of pulses `k` and number of points `n` and returns a
-    Euclidean rhythm represented as a list of `k` distances.
+    Euclidean rhythm represented as a list of `k` distances. Note that `n` needs
+    to be non-negative and `k` needs to be a positive integer.
 -}
 euclid :: Int -> Int -> EuclideanNecklace
 euclid k n =
@@ -93,7 +94,8 @@ euclid k n =
 
 {-| @superEuclid@ takes a list of numbers of pulses `ks` and number of points
     `n` and returns a composite Euclidean rhythm represented as a list of `k`
-    distances.
+    distances. Note that `n` needs to be non-negative and `ks` needs to be a
+    non-empty list containing positive integers.
 -}
 superEuclid :: [Int] -> Int -> EuclideanNecklace
 superEuclid ks n =
