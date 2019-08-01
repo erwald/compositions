@@ -12,8 +12,8 @@ import Data.Maybe (fromMaybe)
 
 euclidToMusic :: Dur -> Pitch -> EuclideanRhythm -> Music Pitch
 euclidToMusic dur p (o, ds) | o > 0 = initialRest :+: euclidToMusic dur p (0, ds)
-    where initialRest = Prim (Rest ((toRational o) * dur))
-euclidToMusic dur p (_, ds) = line $ map toNote ds where toNote d = note ((toRational d) * dur) p
+    where initialRest = Prim (Rest toRational o * dur)
+euclidToMusic dur p (_, ds) = line $ map toNote ds where toNote d = note (toRational d * dur) p
 
 -- Variations
 
@@ -35,13 +35,12 @@ applyVariation (Substitute   p) = mMap (return p)
 
 euclidToMusicVaried :: Dur -> Pitch -> [(Int, Variation)] -> EuclideanRhythm -> Music Pitch
 euclidToMusicVaried dur p vars (o, ds) | o > 0 = initialRest :+: euclidToMusicVaried dur p vars (0, ds)
-    where initialRest = Prim (Rest ((toRational o) * dur))
+    where initialRest = Prim (Rest toRational o * dur)
 euclidToMusicVaried dur p vars (_, ds) = line $ map (uncurry toNote) dsWithVars
   where
-    toNote d []           = note ((toRational d) * dur) p
-    toNote d (var : vars) = applyVariation var $ toNote d vars
-    packVars idx = map snd $ filter ((== idx) . (`mod` (length ds)) . fst) vars
-    dsWithVars = zip ds $ map packVars $ [0 .. (length ds - 1)]
+    toNote d = foldr applyVariation (note (toRational d * dur) p)
+    packVars idx = map snd $ filter ((== idx) . (`mod` length ds) . fst) vars
+    dsWithVars = zip ds $ map packVars [0 .. (length ds - 1)]
 
 -- Composition
 

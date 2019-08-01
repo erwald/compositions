@@ -19,9 +19,9 @@ transInScale :: PitchClass -> [Int] -> Int -> Pitch -> Pitch
 transInScale pc mode i = f
   where
     buildOctave oct = map (\n -> n + oct * 12) mode
-    notesInScale = map (+ (pcToInt pc)) $ concatMap buildOctave [0 .. 8]
+    notesInScale = map (+ pcToInt pc) $ concatMap buildOctave [0 .. 8]
     fAbs p = findIndex (>= p) notesInScale >>= \idx -> nth (idx + i) notesInScale
-    f p = fromMaybe p $ fmap pitch $ fAbs $ absPitch p
+    f p = maybe p pitch $ fAbs $ absPitch p
 
 appoggiatura :: Int -> Rational -> Music Pitch -> Music Pitch
 appoggiatura n r (Prim (Note d p)) = note (r * d) (trans n p) :+: note ((1 - r) * d) p

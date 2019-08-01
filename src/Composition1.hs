@@ -22,7 +22,7 @@ strToMusic p d m@(root, is) r@(o, ds) (s : ss) =
         mapTuple = join (***)
         spanLong c x = swap $ mapTuple reverse $ span (/= c) $ reverse x
         durForPulses 0 = 0
-        durForPulses n = d * (toRational $ ds !! ((o + n) `mod` length ds)) + durForPulses (n - 1)
+        durForPulses n = d * toRational (ds !! ((o + n) `mod` length ds)) + durForPulses (n - 1)
         newRhythm n = ((o + n) `mod` length ds, ds)
         c scaleDegrees len =
             let chordNote i = note (durForPulses len) (transInScale root mode i p) in map chordNote scaleDegrees
@@ -58,7 +58,7 @@ strToMusic p d m@(root, is) r@(o, ds) (s : ss) =
         '{' ->
             let
                 (hd     , tl) = spanLong '}' ss
-                (newRoot, _ ) = pitch $ ((pcToInt root) `mod` 12) + 7
+                (newRoot, _ ) = pitch $ pcToInt root `mod` 12 + 7
                 newMode       = (newRoot, rotateL 2 is)
             in strToMusic p d newMode r hd :+: strToMusic p d m r tl
         '}' -> strToMusic p d m r ss
@@ -80,7 +80,7 @@ g1 = DetGrammar
     ]
 
 comp1 :: Music Pitch
-comp1 = instrument Vibraphone $ (strToMusic pitch qn mode rhythm $ detGenerate g1 3) :+: cadence
+comp1 = instrument Vibraphone $ strToMusic pitch qn mode rhythm (detGenerate g1 3) :+: cadence
   where
     pitch   = (C, 3)
     mode    = (C, euclid 7 12)
@@ -106,7 +106,7 @@ g2 = DetGrammar
     ]
 
 comp2 :: Music Pitch
-comp2 = instrument Vibraphone $ (strToMusic pitch qn mode rhythm $ detGenerate g2 4) :+: cadence
+comp2 = instrument Vibraphone $ strToMusic pitch qn mode rhythm (detGenerate g2 4) :+: cadence
   where
     pitch   = (G, 2)
     mode    = (G, euclid 7 12)
@@ -134,7 +134,7 @@ g3 = DetGrammar
     ]
 
 comp3 :: Music Pitch
-comp3 = instrument Vibraphone $ (strToMusic pitch qn mode rhythm $ detGenerate g3 5) :+: cadence
+comp3 = instrument Vibraphone $ strToMusic pitch qn mode rhythm (detGenerate g3 5) :+: cadence
   where
     pitch   = (F, 2)
     mode    = (F, euclid 7 12)

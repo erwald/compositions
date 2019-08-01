@@ -18,7 +18,7 @@ data DetGrammar a = DetGrammar a -- start sentence
         deriving Show
 
 detGenerate :: Eq a => DetGrammar a -> Int -> [a]
-detGenerate (DetGrammar st ps) n = iterate (concatMap f) [st] !! n where f a = maybe [a] id (lookup a ps)
+detGenerate (DetGrammar st ps) n = iterate (concatMap f) [st] !! n where f a = fromMaybe [a] (lookup a ps)
 
 -- Stochastic Grammar
 
@@ -43,7 +43,7 @@ gen f (Grammar s rules) seed =
     let
         Sto newRules = toStoRules rules
         rands        = randomRs (0.0, 1.0) (mkStdGen seed)
-    in if checkProbs newRules then generate f newRules (s, rands) else (error "gen: stochastic rule-set is malformed")
+    in if checkProbs newRules then generate f newRules (s, rands) else error "gen: stochastic rule-set is malformed"
 
 toStoRules :: (Ord a, Eq a) => RuleSet a -> RuleSet a
 toStoRules (Sto rs) = Sto rs
@@ -53,7 +53,7 @@ insertProb :: [a] -> [(a, Prob)]
 insertProb rules = zip rules (repeat probability) where probability = 1.0 / fromIntegral (length rules)
 
 checkProbs :: (Ord a, Eq a) => [(Rule a, Prob)] -> Bool
-checkProbs rules = and $ map checkSum $ groupBy sameLhs $ sort rules
+checkProbs rules = all checkSum $ groupBy sameLhs $ sort rules
 
 epsilon = 0.001
 
@@ -101,7 +101,7 @@ getNewRhs ruleSets left rand =
     let
         loop ((r, p) : rs) = if rand <= p then rhs r else loop rs
         loop []            = error "getNewRhs: rand exceeds probabilities"
-    in case (find (\((r, p) : _) -> lhs r == left) ruleSets) of
+    in case find (\((r, p) : _) -> lhs r == left) ruleSets of
         Just rules -> loop rules
         Nothing    -> error "getNewRhs: could not find rule for lhs"
 
@@ -110,7 +110,7 @@ getNewRhs ruleSets left rand =
 type InterpRules a b = [(a, Music b -> Music b)]
 
 interpret :: Eq a => LSys a -> InterpRules a b -> Music b -> Music b
-interpret (N x) r m = case (lookup x r) of
+interpret (N x) r m = case lookup x r of
     Just f  -> f m
     Nothing -> error "interpret: no interpretation rule"
 interpret (a :+ b) r m = interpret a r m :+: interpret b r m

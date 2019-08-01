@@ -25,10 +25,10 @@ type EuclideanRhythm = (Int, EuclideanNecklace) -- offset and distances
 -}
 distribEvenly' :: [[a]] -> [a] -> [a]
 -- If the remainder is empty, concatenate and return the accumulator.
-distribEvenly' acc []         = concat acc
+distribEvenly' acc []    = concat acc
 -- If the remainder has only one element, tack it onto the end of the
 -- concatenated accumulator and return the result.
-distribEvenly' acc (rem : []) = concat acc ++ [rem]
+distribEvenly' acc [rem] = concat acc ++ [rem]
 distribEvenly' acc rem =
     let
         -- Distribute all the remainder values over the accumulator (as far as
@@ -100,14 +100,14 @@ euclid k n =
 superEuclid :: [Int] -> Int -> EuclideanNecklace
 superEuclid ks n =
     let scheme = euclid (length ks) n -- Divides cycle into (length ks) parts.
-                                      in zip ks scheme >>= \(k, subN) -> euclid k subN
+                                      in zip ks scheme >>= uncurry euclid
 
 type EuclidModifier = [Int] -> [Int]
 
 shift' :: (Int -> Int -> Int) -> EuclidModifier
 shift' _ []       = []
-shift' f (x : []) = [f x (-1)]
-shift' f (x : xs) = (x : shift' f xs)
+shift' f [x     ] = [f x (-1)]
+shift' f (x : xs) = x : shift' f xs
 
 shift :: (Int -> Int -> Int) -> EuclidModifier
 shift f (x : xs) = filter (> 0) $ shift' f (f x 1 : xs)
@@ -130,14 +130,14 @@ monoizeDistancesL = reverse . monoizeDistancesR . reverse
     the last rhythm of the list.)
 -}
 monoizeDistancesR :: [EuclideanRhythm] -> [EuclideanRhythm]
-monoizeDistancesR []       = []
-monoizeDistancesR (r : []) = [r]
+monoizeDistancesR []  = []
+monoizeDistancesR [r] = [r]
 monoizeDistancesR (r@(o, ds) : rs) =
     let
         absPositions o ys = map (+ o) $ take (length ys) $ scanl (+) 0 ys
         forbiddenPositions = rs >>= uncurry absPositions
-        goodPositions      = uncurry absPositions r >>= \dPos -> if elem dPos forbiddenPositions then [] else [dPos]
-    in if length goodPositions == 0
+        goodPositions      = uncurry absPositions r >>= \dPos -> if dPos `elem` forbiddenPositions then [] else [dPos]
+    in if null goodPositions
         then monoizeDistancesR rs
         else
             let
@@ -151,4 +151,4 @@ monoizeDistancesR (r@(o, ds) : rs) =
     starting at 0.
 -}
 euclidToMode :: [Int] -> [Int]
-euclidToMode ds = take (length ds) $ foldr (\d mode@(m : _) -> ((m - d) `mod` 12 : mode)) [0] ds
+euclidToMode ds = take (length ds) $ foldr (\d mode@(m : _) -> (m - d) `mod` 12 : mode) [0] ds
