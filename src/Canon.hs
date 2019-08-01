@@ -1,3 +1,4 @@
+{-# LANGUAGE TupleSections #-}
 module Canon
     ()
 where
@@ -5,7 +6,7 @@ where
 import Euterpea
 import Data.Map.Strict (Map, fromListWith, toList)
 import Data.List (tails)
-import Data.Maybe (fromMaybe, catMaybes)
+import Data.Maybe (mapMaybe)
 import Control.Applicative
 
 data Motion = Oblique | Contrary | Similar | Parallel
@@ -56,7 +57,7 @@ findCanonErrors numVoices m = mapMaybe (uncurry (findErrors m)) combinations
         in fmap (i, d, ) firstFailingNote
 
 canonize :: Int -> Int -> Int -> Rational -> Music Pitch -> [Music Pitch]
-canonize numVoices times i d m = map (createVoice) [0 .. (numVoices - 1)]
+canonize numVoices times i d m = map createVoice [0 .. (numVoices - 1)]
     where createVoice n = rest (toRational n * d * dur m) :+: repeatIntoLine times (shiftPitches (n * i) m)
 
 findIllegalNotes :: [Music Pitch] -> [((Int, Int), (Int, Int))]
@@ -96,7 +97,7 @@ checkNotes (i1, p1) (i2, p2) =
 
 findIllegalNotesInGroup :: (Dur, [(AbsPitch, AbsPitch)]) -> [((Int, Int), (Int, Int))]
 findIllegalNotesInGroup (_, ns) =
-    let pairs = [ (x, y) | (x : ys) <- tails ns, y <- ys ] in filter not . uncurry checkNotes pairs
+    let pairs = [ (x, y) | (x : ys) <- tails ns, y <- ys ] in filter (not . uncurry checkNotes) pairs
 
 removeRests :: [(Dur, AbsPitch, Dur, Maybe AbsPitch)] -> [(Dur, AbsPitch, Dur, AbsPitch)]
 removeRests []                            = []
