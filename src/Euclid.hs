@@ -147,8 +147,8 @@ monoizeDistancesR (r@(o, ds) : rs) =
                 monoRhythm     = (initialRestDur, monoDistances)
             in monoRhythm : monoizeDistancesR rs
 
-{-| @euclidToMode@ takes a list of distances and returns a list of intervals
-    starting at 0.
+{-| @euclidToMode@ takes a list of distances (positive integers) and returns a list of intervals starting at 0. Passing
+    an empty list as a parameter returns `[0]`.
 -}
 euclidToMode :: [Int] -> [Int]
-euclidToMode ds = take (length ds) $ foldr (\d mode@(m : _) -> (m - d) `mod` 12 : mode) [0] ds
+euclidToMode ds = if null ds then [0] else sort $ foldl (\mode@(m : _) d -> (m + d) `mod` sum ds : mode) [0] ds

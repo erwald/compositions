@@ -83,7 +83,7 @@ findIllegalNotes ms = concatMap findIllegalNotesInGroup $ groupedNotes ms
     prepareNotes ns =
         map (\(pos, i, _, p) -> (pos `rationalMod` shortestDur, (i, p))) $ removeRests $ foldl accumulator [] ns
     fromMusic = map getDurAndAbsPitch . lineToList
-    groupedNotes ms = toList $ sortAndGroup $ concatMap prepareNotes $ map fromMusic ms
+    groupedNotes ms = toList $ sortAndGroup $ concatMap (prepareNotes . fromMusic) ms
 
 checkNotes :: (Int, Int) -> (Int, Int) -> Bool
 checkNotes (i1, p1) (i2, p2) =
