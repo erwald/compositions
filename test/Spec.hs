@@ -45,9 +45,9 @@ prop_superEuclidLen (NonNegative n) = forAll (nonEmptyPositiveInts n) $ \ks -> l
 
 prop_superEuclidSum (NonNegative n) = forAll (nonEmptyPositiveInts n) $ \ks -> sum (superEuclid ks n) == n
 
-prop_euclidToModeLen = forAll (positiveInts 100) $ \ds -> length (euclidToMode ds) == length ds + 1
+prop_euclidToModeLen = forAll (positiveInts 100) $ \ds -> length (euclidToMode ds) == length ds
 
-prop_euclidToModeInitial = forAll (positiveInts 100) $ \ds -> head (euclidToMode ds) == 0
+prop_euclidToModeInitial = forAll (nonEmptyPositiveInts 100) $ \ds -> head (euclidToMode ds) == 0
 
 prop_euclidToModeOrdered = forAll (positiveInts 100) $ \ds -> sort (euclidToMode ds) == euclidToMode ds
 

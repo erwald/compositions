@@ -151,4 +151,4 @@ monoizeDistancesR (r@(o, ds) : rs) =
     an empty list as a parameter returns `[0]`.
 -}
 euclidToMode :: [Int] -> [Int]
-euclidToMode ds = if null ds then [0] else sort $ foldl (\mode@(m : _) d -> (m + d) `mod` sum ds : mode) [0] ds
+euclidToMode ds = take (length ds) $ sort $ foldl (\mode@(m : _) d -> (m + d) : mode) [0] ds
