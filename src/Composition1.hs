@@ -28,7 +28,6 @@ strToMusic p d m@(root, is) r@(o, ds) (s : ss) =
             let chordNote i = note (durForPulses len) (transInScale root mode i p) in map chordNote scaleDegrees
         breakChord notes = let divLength = toRational (length notes) in line $ map (scaleDurations divLength) notes
         makeChord notes = chord [head notes, instrument AcousticGrandPiano $ chord notes]
-
     in case s of
         'X' -> strToMusic p d m r ss
         'Y' -> strToMusic p d m r ss
@@ -42,7 +41,7 @@ strToMusic p d m@(root, is) r@(o, ds) (s : ss) =
                     | abs (ap2 - ap1) <= 6 = ap1
                     | otherwise            = nearPitch (ap1 + 12) ap2
                 pRoot = pitch $ nearPitch (pcToInt root) (absPitch p)
-                p2nd  = pitch $ nearPitch (pcToInt $ fst $ transInScale root mode (3) pRoot) (absPitch p)
+                p2nd  = pitch $ nearPitch (pcToInt $ fst $ transInScale root mode 3 pRoot) (absPitch p)
             in line
                 [ note (durForPulses 2) p2nd
                 , note (durForPulses 1) pRoot
