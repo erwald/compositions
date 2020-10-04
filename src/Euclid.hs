@@ -9,10 +9,12 @@ module Euclid
     , monoizeDistancesL
     , monoizeDistancesR
     , euclidToMode
+    , nonTriadicChordsInMode
     )
 where
 
 import Data.List (sort)
+import Data.Maybe (catMaybes)
 
 type EuclideanNecklace = [Int] -- distances
 
@@ -136,7 +138,8 @@ monoizeDistancesR (r@(o, ds) : rs) =
     let
         absPositions o ys = map (+ o) $ take (length ys) $ scanl (+) 0 ys
         forbiddenPositions = rs >>= uncurry absPositions
-        goodPositions      = uncurry absPositions r >>= \dPos -> if dPos `elem` forbiddenPositions then [] else [dPos]
+        goodPositions      = uncurry absPositions r
+            >>= \dPos -> if dPos `elem` forbiddenPositions then [] else [dPos]
     in if null goodPositions
         then monoizeDistancesR rs
         else
@@ -147,8 +150,49 @@ monoizeDistancesR (r@(o, ds) : rs) =
                 monoRhythm     = (initialRestDur, monoDistances)
             in monoRhythm : monoizeDistancesR rs
 
-{-| @euclidToMode@ takes a list of distances (positive integers) and returns a list of intervals starting at 0. Passing
-    an empty list as a parameter returns `[0]`.
+type Interval = Int
+type Mode = [Interval]
+type Chord = [Interval]
+type Root = Int
+
+{-| @euclidToMode@ takes a list of distances (positive integers) and returns a
+    list of intervals starting at 0. Passing an empty list as a parameter
+    returns `[0]`.
 -}
-euclidToMode :: [Int] -> [Int]
+euclidToMode :: EuclideanNecklace -> Mode
 euclidToMode ds = take (length ds) $ sort $ foldl (\mode@(m : _) d -> (m + d) : mode) [0] ds
+
+nonTriadicChords :: [(String, Chord)]
+nonTriadicChords =
+    [ ("Dominant 7th"       , [0, 4, 7, 10])
+    , ("Minor 7th"          , [0, 3, 7, 10])
+    , ("Diminished 7th"     , [0, 3, 6, 9])
+    , ("Half-diminished 7th", [0, 3, 6, 10])
+    , ("Major 7th"          , [0, 4, 7, 11])
+    , ("Minor major 7th"    , [0, 3, 7, 11])
+    , ("Dominant 9th"       , [0, 4, 7, 10, 14])
+    , ("Dominant minor 9th" , [0, 4, 7, 10, 13])
+    , ("Minor 9th"          , [0, 3, 7, 10, 14])
+    , ("Minor major 9th"    , [0, 3, 7, 11, 14])
+    , ("Major 9th"          , [0, 4, 7, 11, 14])
+    , ("Dominant 11th"      , [0, 4, 7, 10, 14, 17])
+    , ("Minor 11th"         , [0, 3, 7, 10, 14, 17])
+    , ("Major 11th"         , [0, 4, 7, 11, 14, 17])
+    ]
+
+{-| @nonTriadicChordsInMode@ takes a mode and returns a list of tuples containing
+    the Root and the chord type of each match.
+-}
+nonTriadicChordsInMode :: Mode -> [(Root, String)]
+nonTriadicChordsInMode m = catMaybes [ chordInModeResult r c | r <- m, c <- nonTriadicChords ]
+  where
+    isInMode :: Chord -> Bool
+    isInMode = foldr (\i -> (&&) ((i `mod` 12) `elem` m)) True
+
+    transposeChord :: Interval -> Chord -> Chord
+    transposeChord x = map (\i -> (i + x) `mod` 12)
+
+    isInModeWithRoot :: Root -> Chord -> Bool
+    isInModeWithRoot i c = isInMode (transposeChord i c)
+
+    chordInModeResult r c = if isInModeWithRoot r (snd c) then Just (r, fst c) else Nothing
