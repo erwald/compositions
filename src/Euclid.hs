@@ -104,13 +104,13 @@ superEuclid ks n =
 
 type EuclidModifier = [Int] -> [Int]
 
-shift' :: (Int -> Int -> Int) -> EuclidModifier
-shift' _ []       = []
-shift' f [x     ] = [f x (-1)]
-shift' f (x : xs) = x : shift' f xs
-
 shift :: (Int -> Int -> Int) -> EuclidModifier
 shift f (x : xs) = filter (> 0) $ shift' f (f x 1 : xs)
+  where
+    shift' :: (Int -> Int -> Int) -> EuclidModifier
+    shift' _ []       = []
+    shift' f [x     ] = [f x (-1)]
+    shift' f (x : xs) = x : shift' f xs
 
 shiftR :: EuclidModifier
 shiftR = shift (+)
