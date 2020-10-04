@@ -135,7 +135,7 @@ monoizeDistancesL = reverse . monoizeDistancesR . reverse
 monoizeDistancesR :: [EuclideanRhythm] -> [EuclideanRhythm]
 monoizeDistancesR []  = []
 monoizeDistancesR [r] = [r]
-monoizeDistancesR (r@(o, ds) : rs) =
+monoizeDistancesR (r@(_, ds) : rs) =
     let
         absPositions o ys = map (+ o) $ take (length ys) $ scanl (+) 0 ys
         forbiddenPositions = rs >>= uncurry absPositions
