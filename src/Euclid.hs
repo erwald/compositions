@@ -1,3 +1,5 @@
+{-# LANGUAGE TupleSections #-}
+
 module Euclid
     ( EuclideanNecklace
     , EuclideanRhythm
@@ -155,6 +157,27 @@ type Interval = Int
 type Mode = [Interval]
 type Chord = [Interval]
 type Root = Int
+data RomanNumeral = I | II | III | IV | V | VI | VII
+
+instance Show RomanNumeral where
+    show I   = "I"
+    show II  = "II"
+    show III = "III"
+    show IV  = "IV"
+    show V   = "V"
+    show VI  = "VI"
+    show VII = "VII"
+
+modeIndexToRomanNumeral :: Int -> Maybe RomanNumeral
+modeIndexToRomanNumeral i
+    | i == 0    = Just I
+    | i == 1    = Just II
+    | i == 2    = Just III
+    | i == 3    = Just IV
+    | i == 4    = Just V
+    | i == 5    = Just VI
+    | i == 6    = Just VII
+    | otherwise = Nothing
 
 {-| @euclidToMode@ takes a list of distances (positive integers) and returns a
     list of intervals starting at 0. Passing an empty list as a parameter
@@ -181,11 +204,12 @@ nonTriadicChords =
     , ("Major 11th"         , [0, 4, 7, 11, 14, 17])
     ]
 
-{-| @nonTriadicChordsInMode@ takes a mode and returns a list of tuples containing
-    the Root and the chord type of each match.
+{-| @nonTriadicChordsInMode@ takes a mode and returns a list of tuples
+    containing the Root and the chord type of each match.
 -}
-nonTriadicChordsInMode :: Mode -> [(Root, String)]
-nonTriadicChordsInMode m = catMaybes [ chordInModeResult r c | r <- m, c <- nonTriadicChords ]
+nonTriadicChordsInMode :: Mode -> [(RomanNumeral, String)]
+nonTriadicChordsInMode m = catMaybes
+    [ chordInModeResult r index c | (r, index) <- zip m [0 ..], c <- nonTriadicChords ]
   where
     isInMode :: Chord -> Bool
     isInMode = foldr (\i -> (&&) ((i `mod` 12) `elem` m)) True
@@ -196,4 +220,7 @@ nonTriadicChordsInMode m = catMaybes [ chordInModeResult r c | r <- m, c <- nonT
     isInModeWithRoot :: Root -> Chord -> Bool
     isInModeWithRoot i c = isInMode (transposeChord i c)
 
-    chordInModeResult r c = if isInModeWithRoot r (snd c) then Just (r, fst c) else Nothing
+    chordInModeResult :: Root -> Int -> (String, Chord) -> Maybe (RomanNumeral, String)
+    chordInModeResult r index c = if isInModeWithRoot r (snd c)
+        then (, fst c) <$> modeIndexToRomanNumeral index
+        else Nothing
