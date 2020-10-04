@@ -1,6 +1,7 @@
 {-# LANGUAGE TupleSections #-}
 module Canon
-    ()
+    ( canonize
+    )
 where
 
 import Euterpea
